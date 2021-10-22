@@ -1,5 +1,48 @@
 import React, { useState } from 'react'
 
+const PersonForm = ({onSubmit, name, handleName, number, handleNumber}) => {
+  return(
+    <form onSubmit={onSubmit}>
+        <div>
+          name: <input 
+                  value={name}
+                  onChange={handleName}
+                />
+        </div>
+
+        <div>
+          number: <input 
+                  value={number}
+                  onChange={handleNumber}
+                />
+        </div>
+
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+  )
+}
+
+const Filter = ({handleSearch}) => {
+  return(
+    <div>
+    <span>filter shown with</span><input 
+                  placeholder= 'Search....'
+                  onChange={handleSearch}
+                />
+    </div>
+  )
+}
+
+const Persons = ({filtered}) => {
+  return(
+    filtered.map(person => 
+      <p key={person.name}>{person.name} {person.phone}</p>
+      )
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', phone: '040-123456', id: 1 },
@@ -32,7 +75,10 @@ const App = () => {
         if(newName === '' ) {
         alert(`Cannot add an empty string  as a contact`)
         }
-        else if(newNumber === '' && newNumber.length < 7) {
+        else if(newNumber === '') {
+          alert(`Contact cannot be less than seven(7) digits`)
+        }
+        else if(newNumber.length < 7) {
           alert(`Contact cannot be less than seven(7) digits`)
         }
         else {
@@ -62,55 +108,42 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  const handleSearch = (event) => {
-    console.log(event.target.value)
-    setSearch(event.target.value)
+  const handleSearch = (e) => {
+    console.log(e.target.value)
+    setSearch(e.target.value)
   }
 
   const filtered = persons.filter(person => {
     if (search === '') {
-      return person
+    return person
     }
     else if(person.name.toLowerCase().includes(search.toLowerCase())) {
       return person
     }
+    return null
   })
 
 
   return (
     <div>
       <h2>Phonebook</h2>
-      filter shown with<input 
-                  placeholder= 'Search....'
-                  
-                  onChange={handleSearch}
-                />
+
+      <Filter handleSearch={handleSearch} />
 
       <h3>Add New Contact</h3>
-      <form onSubmit={addContact}>
-        <div>
-          name: <input 
-                  value={newName}
-                  onChange={handleNewName}
-                />
-        </div>
 
-        <div>
-          number: <input 
-                  value={newNumber}
-                  onChange={handleNewNumber}
-                />
-        </div>
-
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm
+        onSubmit={addContact}
+        name={newName}
+        handleName={handleNewName}
+        number={newNumber}
+        handleNumber={handleNewNumber}
+      />
+      
         
       <h2>Numbers</h2>
-      {filtered.map(person => 
-          <p key={person.name}>{person.name} {person.phone}</p>
-          )}
+      
+      <Persons filtered={filtered} />
       
     </div>
   )
