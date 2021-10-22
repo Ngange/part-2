@@ -6,12 +6,16 @@ const Header = ({ course }) => {
   )
 }
 
-/* const Total = ({ course }) => {
-  const sum = course.parts[0].exercises + course.parts[1].exercises + course.parts[2].exercises
+const Total = ({ parts }) => {
+  const total = parts.reduce((sum, part) => {
+    return sum + part.exercises
+  }, 0)
   return(
-    <p>Number of exercises {sum}</p>
+    <h4>
+      Total of {total} exercises
+    </h4>
   ) 
-} */
+}
 
 const Part = ({name, exercises}) => {
   return (
@@ -38,6 +42,7 @@ const Course = ({course}) => {
     <div>
       <Header course={course} />
       <Content parts={course.parts} />
+      <Total parts={course.parts} />
     </div>
   )
 }
