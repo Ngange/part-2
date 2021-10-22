@@ -6,10 +6,10 @@ const Header = ({ course }) => {
   )
 }
 
+// used .reduce to calculate total number of exercises
 const Total = ({ parts }) => {
-  const total = parts.reduce((sum, part) => {
-    return sum + part.exercises
-  }, 0)
+  const total = parts.reduce((sum, part) =>
+    sum + part.exercises, 0)
   return(
     <h4>
       Total of {total} exercises
