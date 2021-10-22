@@ -1,10 +1,36 @@
 import React, { useState } from 'react'
 
 const App = () => {
-  const [ persons, setPersons ] = useState([
-    { name: 'Arto Hellas' }
-  ]) 
+  const [ persons, setPersons ] = useState([{ name: 'Arto Hellas' }]) 
   const [ newName, setNewName ] = useState('')
+
+  // Check if person is already in the phoneboook.
+  const contactExists = (() =>
+    persons.some((person) =>
+      person.name.toLowerCase() === newName.toLowerCase())
+    )
+
+  const exists = (newperson) => {
+    alert(`${newperson.name} is already add to phonebook`)
+  }
+
+  /* set's the name of the new person.
+    c
+   */
+    const setcontact = (obj) => {
+      if(contactExists()) {
+          exists(obj)
+      }
+      else {
+        if(newName === '') {
+        alert(`Cannot add an empty string  as a contact`)
+        }
+        else {
+          setPersons(persons.concat(obj))
+          setNewName('')
+        }
+      }
+    } 
 
   const addContact = (event) => {
     event.preventDefault()
@@ -12,8 +38,7 @@ const App = () => {
       name: newName
     }
 
-    setPersons(persons.concat(parsonObject))
-    setNewName('')
+    return setcontact(parsonObject)
   } 
 
   const handleNewName = (event) => {
