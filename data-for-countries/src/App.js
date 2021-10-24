@@ -49,7 +49,7 @@ const BasicData = ({countries}) => {
   )
 }
 
-const Countries = ({countries}) => {
+const Countries = ({countries, showCountry}) => {
   if (countries.length > 10) {
     return <p>Too many matches, please be more specific</p>
   }
@@ -60,9 +60,13 @@ const Countries = ({countries}) => {
   }
   return (
     countries.map(country => {
+      const name = country.name.common
       return (
         <div key={country.tld}>
-          <p>{country.name.common}</p>
+          <p>
+            {name}
+            <button onClick={() => showCountry(name)} >show</button>
+          </p>
         </div>
       )
     })
@@ -86,6 +90,10 @@ const App = () => {
     setSearch(e.target.value)
   }
 
+  const handleClick = (name) => {
+    setSearch(name)
+  }
+
   const filter = countries.filter(country => {
     if (search === '') {
     return null
@@ -104,7 +112,10 @@ const App = () => {
         handleSearch={handleSearch} 
       />
 
-      <Countries countries={filter} />
+      <Countries 
+        countries={filter} 
+        showCountry={handleClick}
+      />
       
     </div>
   );

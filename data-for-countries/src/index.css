@@ -18,3 +18,12 @@ img {
   width: 10em;
   
 }
+
+input {
+  margin-left: 0.5rem;
+  border-style: solid;
+}
+
+button {
+  margin-left: 0.5rem;
+}
