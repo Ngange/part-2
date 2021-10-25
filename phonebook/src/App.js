@@ -68,7 +68,19 @@ const App = () => {
     )
 
   const exists = (newperson) => {
-    alert(`${newperson.name} is already add to phonebook`)
+    const found = persons.find((person) =>
+    person.name.toLowerCase() === newName.toLowerCase())
+    const check = window.confirm(`${newperson.name} is already added to the phonebook, replace the old number with a new one?`)
+
+    if (check) {
+      contactsServices
+      .update(found.id, newperson)
+      .then(response => {
+        setPersons(person => person.id !== found.id ? person : response)
+        alert(`${newperson.name}s' number is updated`)
+    })
+    }
+
   }
 
   /* set's the name of the new person.
