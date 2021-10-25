@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import contactsServices from './services/contacts'
 
 const PersonForm = ({onSubmit, name, handleName, number, handleNumber}) => {
   return(
@@ -51,10 +51,10 @@ const App = () => {
   const [search, setSearch] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    contactsServices
+      .getAll()
+      .then(initialContact => {
+        setPersons(initialContact)
       })
   }, [])
   
@@ -86,10 +86,14 @@ const App = () => {
           alert(`Contact cannot be less than seven(7) digits`)
         }
         else {
-          axios.post('http://localhost:3001/persons', obj)
-          setPersons(persons.concat(obj))
-          setNewName('')
-          setNewNumber('')
+          contactsServices
+          .create(obj)
+          .then(returnedContact => {
+            setPersons(persons.concat(returnedContact))
+            setNewName('')
+            setNewNumber('')
+          })
+          
         }
       }
     }  
