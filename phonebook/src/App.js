@@ -36,10 +36,13 @@ const Filter = ({handleSearch}) => {
   )
 }
 
-const Persons = ({filtered}) => {
+const Persons = ({filtered, remove}) => {
   return(
     filtered.map(person => 
-      <p key={person.name}>{person.name} {person.number}</p>
+      <p key={person.id}>
+        {person.name} {person.number}
+        <button onClick={() => remove(person.id, person.name)}>delete</button> 
+      </p>
       )
   )
 }
@@ -122,6 +125,13 @@ const App = () => {
     setSearch(e.target.value)
   }
 
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Delete ${name} ?`) ) {
+      contactsServices
+      .removeContact(id)
+    }
+  }
+
   const filtered = persons.filter(person => {
     if (search === '') {
     return person
@@ -152,7 +162,7 @@ const App = () => {
         
       <h2>Numbers</h2>
       
-      <Persons filtered={filtered} />
+      <Persons filtered={filtered} remove={handleDelete} />
       
     </div>
   )
