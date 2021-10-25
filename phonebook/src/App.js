@@ -86,6 +86,7 @@ const App = () => {
           alert(`Contact cannot be less than seven(7) digits`)
         }
         else {
+          axios.post('http://localhost:3001/persons', obj)
           setPersons(persons.concat(obj))
           setNewName('')
           setNewNumber('')
