@@ -1,63 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import contactsServices from './services/contacts'
-
-const Notification = ({ message }) => {
-  if (message === null) {
-    return null
-  }
-
-  return (
-    <div className="message">
-      {message}
-    </div>
-  )
-}
-
-const PersonForm = ({onSubmit, name, handleName, number, handleNumber}) => {
-  return(
-    <form onSubmit={onSubmit}>
-        <div>
-          name: <input 
-                  value={name}
-                  onChange={handleName}
-                />
-        </div>
-
-        <div>
-          number: <input 
-                  value={number}
-                  onChange={handleNumber}
-                />
-        </div>
-
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
-  )
-}
-
-const Filter = ({handleSearch}) => {
-  return(
-    <div>
-    <span>filter shown with</span><input 
-                  placeholder= 'Search....'
-                  onChange={handleSearch}
-                />
-    </div>
-  )
-}
-
-const Persons = ({filtered, remove}) => {
-  return(
-    filtered.map(person => 
-      <p key={person.id}>
-        {person.name} {person.number}
-        <button className="delete" onClick={() => remove(person.id, person.name)}>delete</button> 
-      </p>
-      )
-  )
-}
+import Filter from './components/Filter'
+import Notification from './components/Notification'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -65,12 +11,13 @@ const App = () => {
   const [ newNumber, setNewNumber ] = useState('')
   const [search, setSearch] = useState('')
   const [message, setMessage] = useState(null)
-
+  const [cssName, setCssName] = useState(null)
 
   useEffect(() => {
     contactsServices
       .getAll()
       .then(initialContact => {
+        console.log(initialContact)
         setPersons(initialContact)
       })
   }, [])
@@ -81,21 +28,32 @@ const App = () => {
       person.name.toLowerCase() === newName.toLowerCase())
     )
 
-  const exists = (newperson) => {
+    //Checks if person exists
+  const exists = (newPerson) => {
     const found = persons.find((person) =>
     person.name.toLowerCase() === newName.toLowerCase())
-    const check = window.confirm(`${newperson.name} is already added to the phonebook, replace the old number with a new one?`)
+    const check = window.confirm(`${newPerson.name} is already added to the phonebook, replace the old number with a new one?`)
 
     if (check) {
       contactsServices
-    .update(found.id, newperson)
-    .then(response => {
-      setPersons(person => person.id !== found.id ? person : response)
-      setMessage(`${newperson.name}s' number is changed`)
-      setTimeout(() => {
-        setMessage(null)
-      }, 5000);
-    })
+      .update(found.id, newPerson)
+      .then(response => {
+        setPersons(person => person.id !== found.id ? person : response)
+        setMessage(`${newPerson.name}s' number is changed`)
+        setCssName("success")
+        setTimeout(() => {
+          setMessage(null)
+          setCssName(null)
+        }, 5000);
+      })
+      .catch(error => {
+        setMessage(`Information of ${newPerson.name} has already been removed from the server!`)
+        setCssName("error")
+        setTimeout(() => {
+          setMessage(null)
+          setCssName(null)
+        }, 5000);
+      })
     }
 
   }
@@ -103,7 +61,7 @@ const App = () => {
   /* set's the name of the new person.
     c
    */
-    const setcontact = (obj) => {
+    const setContact = (obj) => {
       if(nameExists()) {
         exists(obj)
       }  
@@ -125,11 +83,12 @@ const App = () => {
             setNewName('')
             setNewNumber('')
             setMessage(`Added ${obj.name}`)
+            setCssName("success")
             setTimeout(() => {
               setMessage(null)
-            }, 5000);
+              setCssName(null)
+            }, 10000);
           })
-          
         }
       }
     }  
@@ -140,7 +99,7 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    return setcontact(parsonObject)
+    return setContact(parsonObject)
   } 
 
   const handleNewName = (event) => {
@@ -158,10 +117,40 @@ const App = () => {
     setSearch(e.target.value)
   }
 
+
+  // Handles the deletion of contacts
   const handleDelete = (id, name) => {
     if (window.confirm(`Delete ${name} ?`) ) {
+      setMessage(`Deleted ${name}`)
+      setCssName("success")
+      setTimeout(() => {
+        setMessage(null)
+        setCssName(null)
+      }, 10000);
       contactsServices
       .removeContact(id)
+      .catch(error => {
+        setMessage(`Information of ${name} has already been removed from the server!`)
+        setCssName("error")
+        setTimeout(() => {
+          setMessage(null)
+          setCssName(null)
+        }, 10000);
+      })
+
+      //to refresh the contact and exclude deleted contact
+      contactsServices.getAll().then(response => {
+        let data = []
+        // eslint-disable-next-line array-callback-return
+        response.map(r => {
+          if (r.id !== id) {
+            console.log(r)
+            data.push(r)
+            
+          }
+        })
+        setPersons(data)
+      })
     }
   }
 
@@ -180,7 +169,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
-      <Notification message={ message } />
+      <Notification message={ message } cssName={cssName} />
       <Filter handleSearch={handleSearch} />
 
       <h3>Add New Contact</h3>
