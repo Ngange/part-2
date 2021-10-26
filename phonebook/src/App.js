@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import contactsServices from './services/contacts'
 
+const Notification = ({ message }) => {
+  if (message === null) {
+    return null
+  }
+
+  return (
+    <div className="message">
+      {message}
+    </div>
+  )
+}
+
 const PersonForm = ({onSubmit, name, handleName, number, handleNumber}) => {
   return(
     <form onSubmit={onSubmit}>
@@ -41,7 +53,7 @@ const Persons = ({filtered, remove}) => {
     filtered.map(person => 
       <p key={person.id}>
         {person.name} {person.number}
-        <button onClick={() => remove(person.id, person.name)}>delete</button> 
+        <button className="delete" onClick={() => remove(person.id, person.name)}>delete</button> 
       </p>
       )
   )
@@ -52,6 +64,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [search, setSearch] = useState('')
+  const [message, setMessage] = useState(null)
+
 
   useEffect(() => {
     contactsServices
@@ -74,10 +88,13 @@ const App = () => {
 
     if (check) {
       contactsServices
-      .update(found.id, newperson)
-      .then(response => {
-        setPersons(person => person.id !== found.id ? person : response)
-        alert(`${newperson.name}s' number is updated`)
+    .update(found.id, newperson)
+    .then(response => {
+      setPersons(person => person.id !== found.id ? person : response)
+      setMessage(`${newperson.name}s' number is changed`)
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000);
     })
     }
 
@@ -107,6 +124,10 @@ const App = () => {
             setPersons(persons.concat(returnedContact))
             setNewName('')
             setNewNumber('')
+            setMessage(`Added ${obj.name}`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000);
           })
           
         }
@@ -159,6 +180,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
 
+      <Notification message={ message } />
       <Filter handleSearch={handleSearch} />
 
       <h3>Add New Contact</h3>

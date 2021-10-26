@@ -18,9 +18,7 @@ const update = (id, newObject) => {
 }
 
 const removeContact = (id) => {
-    axios.delete(`${baseUrl}/${id}`)
-    const request = axios.get(baseUrl)
-    return request.then(response => response.data)
+   return axios.delete(`${baseUrl}/${id}`)
 }
 
 // eslint-disable-next-line import/no-anonymous-default-export
